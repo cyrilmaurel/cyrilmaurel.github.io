@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Portfolio Cyril Maurel · BTS SIO SISR</title>
+  <meta name="description" content="Portfolio BTS SIO option SISR">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script src="assets/js/data.js" defer></script>
+  <script src="assets/js/main.js" defer></script>
+</head>
+<body data-root="" data-page="print">
+<main class="wrap content print-doc">
+  <div class="print-bar">
+    <p id="print-status">Chargement de toutes les pages du portfolio…</p>
+    <button class="btn" id="print-all" type="button" disabled>Enregistrer en PDF</button>
+  </div>
+
+  <section class="cover">
+    <img data-profil-photo src="assets/img/photo.jpg" alt="Photo de Cyril Maurel">
+    <div>
+      <p class="eyebrow">Portfolio · Épreuve E5</p>
+      <h1 data-profil="nomComplet"></h1>
+      <p class="lead" style="margin:0">BTS Services informatiques aux organisations, option SISR</p>
+      <dl>
+        <dt>Établissement</dt><dd data-profil="etablissement"></dd>
+        <dt>Session</dt><dd data-profil="session"></dd>
+        <dt>Alternance</dt><dd>Meldomys, Direction Numérique &amp; Logistique</dd>
+        <dt>Email</dt><dd data-profil="email"></dd>
+        <dt>Portfolio en ligne</dt><dd id="site-url"></dd>
+      </dl>
+    </div>
+  </section>
+
+  <section>
+    <h1 class="part">À propos</h1>
+    <div id="p-about"></div>
+  </section>
+
+  <section class="page-break" id="p-parcours"></section>
+  <section class="page-break" id="p-entreprise"></section>
+
+  <section class="page-break">
+    <h1 class="part">Certifications</h1>
+    <div class="certs" data-render="certifs"></div>
+  </section>
+
+  <section class="page-break synth-wide">
+    <h1 class="part">Tableau de synthèse des réalisations (E5)</h1>
+    <div data-render="synthese"></div>
+  </section>
+
+  <section class="page-break">
+    <h1 class="part">Réalisations</h1>
+    <div data-render="realisations-list"></div>
+  </section>
+  <div id="p-fiches"></div>
+
+  <section class="page-break">
+    <h1 class="part">Veille technologique</h1>
+    <div data-render="veille"></div>
+  </section>
+</main>
+</body>
+</html>

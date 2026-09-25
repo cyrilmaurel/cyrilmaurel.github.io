@@ -128,18 +128,29 @@ const CERTIFICATIONS = [
   { nom: "CCNA", organisme: "Cisco", detail: "Réseaux : routage, commutation, sécurité", etat: "envisagée", date: "", lien: "" }
 ];
 
-/* Articles de veille : ajoute-en un par mois (le plus récent en premier) */
+/* Veille : ajoute une synthèse par mois (la plus récente en premier) */
 const VEILLE = {
-  sujet: "[Ton sujet de veille]",
-  pourquoi: "[Pourquoi ce sujet, en lien avec ton poste chez Meldomys]",
-  outils: ["Feedly (flux RSS)", "Google Alerts", "LinkedIn"],
+  sujet: "La donnée au service du logement social",
+  pourquoi: "Chez Meldomys, trois ERP (gestion locative, comptabilité, gestion technique) produisent chacun leurs données, et un poste est dédié à leur qualité. Je veux comprendre comment les bailleurs sociaux exploitent ces données pour piloter leur patrimoine, rénover leurs logements et mieux servir leurs locataires, et quel rôle l’informatique joue dans ce travail.",
+  outils: ["Google Alerts : 5 alertes hebdomadaires (« Union sociale pour l’habitat », « logement social » données, « bailleur social » numérique, PrioRéno, RPLS logement)"],
   sources: [
-    { nom: "CERT-FR", url: "https://www.cert.ssi.gouv.fr/" },
-    { nom: "ANSSI", url: "https://cyber.gouv.fr/" },
-    { nom: "Cybermalveillance.gouv.fr", url: "https://www.cybermalveillance.gouv.fr/" },
-    { nom: "IT-Connect", url: "https://www.it-connect.fr/" }
+    { nom: "L’Union sociale pour l’habitat (USH)", url: "https://www.union-habitat.org/" },
+    { nom: "data.gouv.fr : répertoire RPLS", url: "https://www.data.gouv.fr/datasets/donnees-detaillees-au-logement-du-repertoire-des-logements-locatifs-des-bailleurs-sociaux-rpls" },
+    { nom: "Banque des Territoires", url: "https://www.banquedesterritoires.fr/" },
+    { nom: "Enedis : actualités logement social", url: "https://www.enedis.fr/presse" }
   ],
   articles: [
-    { date: "JJ/MM/AA", titre: "[Titre de ta première synthèse]", resume: "[3 à 5 lignes : ce qui s’est passé, pourquoi c’est important, ce que ça change pour une organisation comme Meldomys]", sources: [] }
+    { date: "25/09/26",
+      titre: "Logement social : la donnée devient un outil de pilotage",
+      contenu: [
+        "Les bailleurs sociaux disposent de nombreuses données sur leur parc, mais elles sont souvent dispersées entre plusieurs logiciels : gestion locative, comptabilité, suivi du patrimoine. Des plateformes se placent désormais entre ces outils pour produire des tableaux de bord communs, afin d’anticiper la vacance, de réduire les impayés et de prioriser les travaux.",
+        "Ces données servent aussi à rendre des comptes. Chaque année, les bailleurs alimentent le répertoire national RPLS (surface, date de construction, diagnostic de performance énergétique de chaque logement), publié en données ouvertes par le service statistique du ministère. Depuis 2024, la plateforme PrioRéno Logement Social croise ces informations avec les consommations réelles d’électricité et de gaz d’Enedis et de GRDF pour aider les bailleurs à choisir quels bâtiments rénover en priorité. Douze organismes pilotes, représentant environ 1,7 million de logements, l’ont testée.",
+        "Ce que ça change pour Meldomys : avec la loi Climat et résilience, les logements les plus énergivores sortent progressivement du marché locatif (classe G depuis 2025, F en 2028). Des données fiables sur le patrimoine deviennent indispensables pour planifier les rénovations. C’est tout l’enjeu du travail sur la qualité de la donnée mené à la DNL, et pour l’équipe informatique, cela passe par des ERP bien alimentés, des échanges fiables entre eux et des sauvegardes solides."
+      ],
+      sources: [
+        { nom: "Qoridor, « Logement social : quand la data réinvente le pilotage des bailleurs » (mai 2026)", url: "https://blog.qoridor.fr/article/logement-social-quand-data" },
+        { nom: "data.gouv.fr, RPLS (mise à jour du 21/09/2026)", url: "https://www.data.gouv.fr/datasets/donnees-detaillees-au-logement-du-repertoire-des-logements-locatifs-des-bailleurs-sociaux-rpls" },
+        { nom: "Enedis, lancement de PrioRéno Logement Social (24/04/2024)", url: "https://www.enedis.fr/presse/la-banque-des-territoires-letat-lunion-sociale-pour-lhabitat-enedis-et-grdf-sassocient-pour" }
+      ] }
   ]
 };

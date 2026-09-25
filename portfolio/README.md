@@ -40,3 +40,11 @@ Tester en local : ouvre simplement `index.html` dans ton navigateur.
 
 Dans `assets/js/data.js`, section `CERTIFICATIONS` : passe `etat` à `"obtenue"`,
 ajoute la `date`, et dépose l'attestation dans `docs/` (lien dans `lien`).
+
+## Version PDF du portfolio
+
+Page « Version PDF » (print.html) : elle rassemble tout le portfolio (présentation,
+parcours, alternance, certifications, tableau de synthèse, fiches, veille).
+Attends le message « Portfolio prêt », clique sur « Enregistrer en PDF », puis choisis
+l'imprimante « Enregistrer au format PDF ». Ne fonctionne que sur le site en ligne.
+Chaque page du site s'imprime aussi seule (Ctrl + P).
