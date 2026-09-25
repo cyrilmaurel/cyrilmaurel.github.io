@@ -209,9 +209,12 @@ function renderVeille(el) {
 function renderAccueil() {
   document.querySelectorAll("[data-profil]").forEach(n => {
     const k = n.dataset.profil;
+    if (k === "cv" && !PROFIL.cv) { n.hidden = true; return; }
     if (n.tagName === "A") n.href = k === "email" ? `mailto:${PROFIL.email}` : (k === "cv" ? ROOT + PROFIL.cv : PROFIL[k]);
     else n.textContent = k === "nomComplet" ? `${PROFIL.prenom} ${PROFIL.nom}` : PROFIL[k];
   });
+  const av = document.querySelector(".avatar");
+  if (av && PROFIL.photo) av.innerHTML = `<img src="${ROOT}${PROFIL.photo}" alt="Photo de ${esc(PROFIL.prenom)} ${esc(PROFIL.nom)}">`;
   const s = document.getElementById("stats");
   if (s) {
     const e5 = REALISATIONS.filter(r => r.epreuve === "E5");
