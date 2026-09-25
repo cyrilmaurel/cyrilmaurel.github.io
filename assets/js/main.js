@@ -25,7 +25,8 @@ function renderChrome() {
     ["entreprise", "Alternance", "entreprise.html"],
     ["realisations", "Réalisations", "realisations.html"],
     ["synthese", "Tableau de synthèse", "synthese.html"],
-    ["veille", "Veille", "veille.html"]
+    ["veille", "Veille", "veille.html"],
+    ["print", "Version PDF", "print.html"]
   ];
   const header = document.createElement("header");
   header.className = "site-header";
@@ -105,7 +106,15 @@ function renderRealisations(el) {
       <button class="filter" data-f="E6">E6</button>
       ${ALL_COMP.map(c => `<button class="filter" data-f="${c.code}" title="${esc(c.nom)}">${c.code}</button>`).join("")}
     </div>
-    <div class="cards">${REALISATIONS.map(card).join("")}</div>`;
+    <section class="real-group">
+      <h2 class="section-title">Épreuve E5 · portfolio</h2>
+      <div class="cards">${e5.map(card).join("")}</div>
+    </section>
+    <section class="real-group">
+      <h2 class="section-title">Épreuve E6 · réalisations techniques</h2>
+      <p class="small">L’E6 s’appuie sur un dossier numérique distinct (fiches descriptives officielles). Ces réalisations sont aussi présentées ici pour regrouper mon travail.</p>
+      <div class="cards">${e6.map(card).join("")}</div>
+    </section>`;
   el.querySelectorAll(".filter").forEach(b => b.addEventListener("click", () => {
     el.querySelectorAll(".filter").forEach(x => x.classList.toggle("active", x === b));
     const f = b.dataset.f;
@@ -113,6 +122,7 @@ function renderRealisations(el) {
       const show = f === "all" || c.dataset.epreuve === f || c.dataset.comps.split(" ").includes(f);
       c.hidden = !show;
     });
+    el.querySelectorAll(".real-group").forEach(g => { g.hidden = !g.querySelector(".card:not([hidden])"); });
   }));
 }
 
@@ -120,7 +130,7 @@ function renderRealisations(el) {
 function renderSynthese(el) {
   const e5 = REALISATIONS.filter(r => r.epreuve === "E5");
   const cov = coverage(e5, COMPETENCES_E5);
-  const url = location.href.replace(/synthese\.html.*$/, "");
+  const url = new URL(ROOT || "./", location.href).href;
   const section = key => {
     const rows = e5.filter(r => r.cadre === key);
     return `
@@ -162,9 +172,10 @@ function renderSynthese(el) {
 
 /* ---------- En-tête d'une fiche de réalisation ---------- */
 function renderFiche(el) {
-  const r = REALISATIONS.find(x => x.id === document.body.dataset.real);
+  const id = el.dataset.real || document.body.dataset.real;
+  const r = REALISATIONS.find(x => x.id === id);
   if (!r) { el.innerHTML = `<p class="empty">Réalisation introuvable : vérifie l’id dans data.js.</p>`; return; }
-  document.title = `${r.titre} · Portfolio ${PROFIL.prenom} ${PROFIL.nom}`;
+  if (PAGE !== "print") document.title = `${r.titre} · Portfolio ${PROFIL.prenom} ${PROFIL.nom}`;
   const comps = r.competences.map(compByCode).filter(Boolean);
   el.innerHTML = `
     <p class="eyebrow"><a href="${ROOT}realisations.html">Réalisations</a> / ${r.epreuve}</p>
@@ -182,6 +193,18 @@ function renderFiche(el) {
     </div>`;
 }
 
+/* ---------- Certifications ---------- */
+function renderCertifs(el) {
+  const cls = { "obtenue": "ok", "en cours": "wip" };
+  el.innerHTML = CERTIFICATIONS.map(c => `
+    <div class="cert ${c.etat === "obtenue" ? "done" : ""}">
+      <span class="etat etat-${cls[c.etat] || "todo"}">${esc(c.etat)}${c.date ? " · " + esc(c.date) : ""}</span>
+      <h3>${c.lien ? `<a href="${esc(c.lien)}" target="_blank" rel="noopener">${esc(c.nom)}</a>` : esc(c.nom)}</h3>
+      <p class="small">${esc(c.organisme)}</p>
+      <p class="small" style="margin:0">${esc(c.detail)}</p>
+    </div>`).join("");
+}
+
 /* ---------- Page Veille ---------- */
 function renderVeille(el) {
   el.innerHTML = `
@@ -190,7 +213,7 @@ function renderVeille(el) {
       <p>${esc(VEILLE.pourquoi)}</p>
       <div class="two">
         <div><h3>Outils</h3><ul>${VEILLE.outils.map(o => `<li>${esc(o)}</li>`).join("")}</ul></div>
-        <div><h3>Sources suivies</h3><ul>${VEILLE.sources.map(s => `<li><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.nom)}</a></li>`).join("")}</ul></div>
+        <div><h3>Sources de référence</h3><ul>${VEILLE.sources.map(s => `<li><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.nom)}</a></li>`).join("")}</ul></div>
       </div>
     </section>
     <h2 class="section-title">Synthèses</h2>
@@ -199,20 +222,24 @@ function renderVeille(el) {
         <article class="entry">
           <time>${esc(a.date)}</time>
           <h3>${esc(a.titre)}</h3>
-          <p>${esc(a.resume)}</p>
+          ${(a.contenu || [a.resume]).filter(Boolean).map(p => `<p>${esc(p)}</p>`).join("")}
           ${a.sources.length ? `<p class="small">Sources : ${a.sources.map(s => `<a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.nom)}</a>`).join(", ")}</p>` : ""}
         </article>`).join("")}
     </div>`;
 }
 
 /* ---------- Accueil : profil + aperçu ---------- */
-function renderAccueil() {
-  document.querySelectorAll("[data-profil]").forEach(n => {
+function fillProfil(root = document) {
+  root.querySelectorAll("[data-profil]").forEach(n => {
     const k = n.dataset.profil;
     if (k === "cv" && !PROFIL.cv) { n.hidden = true; return; }
     if (n.tagName === "A") n.href = k === "email" ? `mailto:${PROFIL.email}` : (k === "cv" ? ROOT + PROFIL.cv : PROFIL[k]);
     else n.textContent = k === "nomComplet" ? `${PROFIL.prenom} ${PROFIL.nom}` : PROFIL[k];
   });
+}
+
+function renderAccueil() {
+  fillProfil();
   const av = document.querySelector(".avatar");
   if (av && PROFIL.photo) av.innerHTML = `<img src="${ROOT}${PROFIL.photo}" alt="Photo de ${esc(PROFIL.prenom)} ${esc(PROFIL.nom)}">`;
   const s = document.getElementById("stats");
@@ -229,13 +256,73 @@ function renderAccueil() {
   if (latest) latest.innerHTML = REALISATIONS.filter(r => r.epreuve === "E5").slice(0, 3).map(card).join("");
 }
 
+/* ---------- Liste simple des réalisations (version PDF) ---------- */
+function renderRealList(el) {
+  const block = (ep, label) => {
+    const rows = REALISATIONS.filter(r => r.epreuve === ep);
+    return `<h2>${label}</h2>
+      <div class="table-scroll"><table class="synth" style="min-width:0">
+        <thead><tr><th>Réalisation</th><th>Cadre</th><th>Période</th><th>Compétences</th></tr></thead>
+        <tbody>${rows.map(r => `<tr><td class="titre"><strong>${esc(r.titre)}</strong></td>
+          <td>${CADRE_COURT[r.cadre]}</td><td>${periode(r)}</td><td>${r.competences.join(", ")}</td></tr>`).join("")}</tbody>
+      </table></div>`;
+  };
+  el.innerHTML = block("E5", "Épreuve E5") + `<div style="height:1.5rem"></div>` + block("E6", "Épreuve E6");
+}
+
+/* ---------- Version PDF : tout le portfolio sur une page ---------- */
+async function buildPrint() {
+  const status = document.getElementById("print-status");
+  const btn = document.getElementById("print-all");
+  const grab = async (url, sel) => {
+    const html = await (await fetch(url, { cache: "no-store" })).text();
+    const doc = new DOMParser().parseFromString(html, "text/html");
+    const node = doc.querySelector(sel);
+    node.querySelectorAll(".actions, .no-print, .btn").forEach(n => n.remove());
+    return node;
+  };
+  try {
+    document.getElementById("p-about").innerHTML = (await grab("index.html", "#about")).innerHTML;
+    for (const [id, url] of [["p-parcours", "parcours.html"], ["p-entreprise", "entreprise.html"]]) {
+      const node = await grab(url, "main");
+      const box = document.getElementById(id);
+      box.innerHTML = node.innerHTML;
+      box.querySelector('[data-render="certifs"]')?.closest("section")?.remove();  // déjà dans la partie Certifications
+      fillProfil(box);
+    }
+    const list = document.getElementById("p-fiches");
+    for (const r of [...REALISATIONS.filter(x => x.epreuve === "E5"), ...REALISATIONS.filter(x => x.epreuve === "E6")]) {
+      const node = await grab(`realisations/${r.id}.html`, "main");
+      node.querySelectorAll("[src], [href]").forEach(n => {
+        for (const a of ["src", "href"]) { const v = n.getAttribute(a); if (v && v.startsWith("../")) n.setAttribute(a, v.slice(3)); }
+      });
+      node.querySelectorAll('a[href="realisations.html"]').forEach(a => a.closest("p")?.remove());
+      const sec = document.createElement("section");
+      sec.className = "page-break print-fiche";
+      sec.innerHTML = node.innerHTML;
+      const head = sec.querySelector('[data-render="fiche"]');
+      if (head) { head.dataset.real = r.id; renderFiche(head); }
+      list.append(sec);
+    }
+    status.textContent = "Portfolio prêt : clique sur « Enregistrer en PDF », puis choisis « Enregistrer au format PDF » comme imprimante.";
+    btn.disabled = false;
+  } catch (e) {
+    status.textContent = "Impossible de charger toutes les pages. Ouvre cette page depuis le site en ligne (pas en double-cliquant sur le fichier).";
+  }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   renderChrome();
   renderAccueil();
-  const map = { realisations: renderRealisations, synthese: renderSynthese, fiche: renderFiche, veille: renderVeille };
+  const map = { "realisations-list": renderRealList, certifs: renderCertifs, realisations: renderRealisations, synthese: renderSynthese, fiche: renderFiche, veille: renderVeille };
   document.querySelectorAll("[data-render]").forEach(el => map[el.dataset.render]?.(el));
   const pdf = document.getElementById("pdf-link");
   if (pdf) pdf.href = ROOT + PROFIL.synthesePdf;
   const printBtn = document.getElementById("print");
   if (printBtn) printBtn.addEventListener("click", () => window.print());
+  if (PAGE === "print") {
+    document.getElementById("site-url").textContent = new URL("./", location.href).href;
+    document.getElementById("print-all").addEventListener("click", () => window.print());
+    buildPrint();
+  }
 });
